@@ -1,8 +1,9 @@
 # r_wrapper
 
-Seamlessly use R packages in Python.
 Warning: still highly experimental and likely to break.
 
+Seamlessly use R packages in Python.
+This is accomplished by providing an opinionated wrapper around `rpy2`.
 
 ## Installation
 
