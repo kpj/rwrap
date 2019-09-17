@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "r_wrapper"
+version = "0.0.1"
+description = "Seamlessly use R packages in Python."
+
+authors = ["kpj <kpjkpjkpjkpjkpjkpj@gmail.com>"]
+license = "MIT"
+
+readme = "README.md"
+
+repository = "https://github.com/kpj/r_wrapper"
+
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.1"
+
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+
+[tool.dephell.main]
+from = {format = "poetry", path = "pyproject.toml"}
+to = {format = "setuppy", path = "setup.py"}
+# execute `dephell deps convert` to generate setup.py
