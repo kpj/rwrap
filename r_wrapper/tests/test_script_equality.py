@@ -28,10 +28,7 @@ def gather_test_scripts(script_dir='./r_wrapper/tests/scripts'):
         if entry.name.startswith('__'):
             continue
 
-        test_name = entry.name
-        script_list.append((
-            os.path.realpath(f'{entry.path}/{test_name}.R'),
-            os.path.realpath(f'{entry.path}/{test_name}.py')))
+        script_list.append((entry.name, os.path.realpath(entry.path)))
     return script_list
 
 
@@ -40,8 +37,18 @@ def assert_file_equality(fname1, fname2):
         assert fd1.read() == fd2.read()
 
 
-@pytest.mark.parametrize('r_script,py_script', gather_test_scripts())
-def test_execution(empty_dir, r_script, py_script):
+@pytest.mark.parametrize('name,path', gather_test_scripts())
+def test_execution(empty_dir, name, path):
+    # assemble paths
+    py_script = os.path.join(path, f'{name}.py')
+    r_script = os.path.join(path, f'{name}.R')
+
+    # execute setup script if given
+    setup_script = os.path.join(path, 'setup.py')
+    if os.path.exists(setup_script):
+        print('Calling setup')
+        subprocess.call(['python3', setup_script])
+
     # execute Python script
     os.makedirs('cwd_py')
     with chdir('cwd_py'):
