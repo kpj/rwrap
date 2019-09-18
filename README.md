@@ -29,11 +29,13 @@ df = biomaRt.getBM(
     filters='snp_filter', values=snp_list, mart=ensembl)
 ```
 
+Check the `r_wrapper/tests/` directory for more examples showing how to rewrite R scripts in Python.
+
 
 ## Tests
 
 A comprehensive test suite aims at providing stability and avoiding regressions.
-Check the `r_wrapper/tests/` directory for explicitly supported packages.
+The examples in `r_wrapper/tests/` are validated using `pytest`.
 
 Run tests as follows:
 ```bash
