@@ -56,13 +56,13 @@ def _(obj):
     print('rpy2py', 'ro.Vector -> dict')
     print(obj)
 
+    keys = obj.names
     values = [converter.rpy2py(x) for x in obj]
 
-    if obj.names.typeof == RTYPES.NILSXP:
-        return values
-    else:
-        keys = obj.names
+    if isinstance(keys, np.ndarray) or keys.typeof != RTYPES.NILSXP:
         return dict(zip(keys, values))
+    else:
+        return values
 
 
 @converter.rpy2py.register(FloatSexpVector)
