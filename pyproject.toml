@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "r_wrapper"
 version = "0.0.1"
-description = "Seamlessly use R packages in Python."
+description = "Seamlessly integrate R packages in Python by allowing intuitive importing and providing opinionated data type conversion functions."
 
 authors = ["kpj <kpjkpjkpjkpjkpjkpj@gmail.com>"]
 license = "MIT"
