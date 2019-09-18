@@ -1,5 +1,8 @@
 # r_wrapper
 
+[![pypi version](https://img.shields.io/pypi/v/r_wrapper.svg)](https://pypi.org/project/r_wrapper/)
+[![license](https://img.shields.io/pypi/l/r_wrapper.svg)](https://pypi.org/project/r_wrapper/)
+
 Warning: still highly experimental and likely to break.
 
 Seamlessly integrate R packages in Python by allowing intuitive importing and providing opinionated data type conversion functions.
