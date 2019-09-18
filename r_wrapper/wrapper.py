@@ -2,6 +2,8 @@
 
 from typing import Callable
 
+from loguru import logger
+
 from rpy2.robjects.packages import importr
 from rpy2.robjects.conversion import localconverter
 
@@ -19,7 +21,7 @@ class RLibraryWrapper:
     def __getattr__(self, name: str) -> Callable:
         """Access method of R package."""
         def wrapper(*args, **kwargs):
-            print('Calling', name)
+            logger.debug('Calling {name}', name=name)
             with localconverter(converter) as cv:
                 res = getattr(self.lib, name)(*args, **kwargs)
                 return cv.rpy2py(res)

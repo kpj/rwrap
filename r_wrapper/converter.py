@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 
+from loguru import logger
+
 from rpy2.rinterface import RTYPES, FloatSexpVector
 
 import rpy2.robjects as ro
@@ -21,7 +23,7 @@ converter = Converter('r_wrapper', template=template_converter)
 
 @converter.py2rpy.register(list)
 def _(obj):
-    print('py2rpy', 'list -> <type>Vector')
+    logger.debug('py2rpy: list -> <type>Vector')
     # TODO: handle mixed types better
 
     if len({type(e) for e in obj}) != 1:
@@ -36,7 +38,7 @@ def _(obj):
 
     for type_, VectorClass in vector_type_map.items():
         if isinstance(obj[0], type_):
-            print('Detected:', type_)
+            logger.trace(f'Detected: {type_}')
             return VectorClass([converter.py2rpy(x) for x in obj])
 
     raise TypeError(f'No vector class found for {obj}')
@@ -44,8 +46,9 @@ def _(obj):
 
 @converter.py2rpy.register(dict)
 def _(obj):
-    print('py2rpy', 'dict -> ro.ListVector')
-    print([type(o) for o in obj.values()])
+    logger.debug('py2rpy: dict -> ro.ListVector')
+    logger.trace(f' object: {obj}')
+    logger.trace(f' member types: {[type(o) for o in obj.values()]}')
 
     return ro.vectors.ListVector(
         {k: converter.py2rpy(v) for k, v in obj.items()})
@@ -53,8 +56,8 @@ def _(obj):
 
 @converter.rpy2py.register(ro.vectors.ListVector)
 def _(obj):
-    print('rpy2py', 'ro.Vector -> dict')
-    print(obj)
+    logger.debug('rpy2py: ro.ListVector -> dict/list')
+    logger.trace(f' object: {obj}')
 
     keys = obj.names
     values = [converter.rpy2py(x) for x in obj]
@@ -71,6 +74,9 @@ def rpy2py_sexp(obj):
 
     This function is adapted from 'rpy2/robjects/numpy2ri.py'.
     """
+    logger.debug('rpy2py: ri.FloatSexpVector -> np.array/pd.Series')
+    logger.trace(f' object: {obj}')
+
     # TODO: implement this for other SexpVector types
     _vectortypes = (RTYPES.LGLSXP,
                     RTYPES.INTSXP,
