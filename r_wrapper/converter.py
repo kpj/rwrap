@@ -1,5 +1,10 @@
 """Implement opinionated Py<->R conversion functions."""
 
+import numpy as np
+import pandas as pd
+
+from rpy2.rinterface import RTYPES, FloatSexpVector
+
 import rpy2.robjects as ro
 from rpy2.robjects import numpy2ri, pandas2ri
 
@@ -55,3 +60,28 @@ def _(obj):
     keys = obj.names
 
     return dict(zip(keys, values))
+
+
+@converter.rpy2py.register(FloatSexpVector)
+def rpy2py_sexp(obj):
+    """Convert named arrays while keeping the names.
+
+    This function is adapted from 'rpy2/robjects/numpy2ri.py'.
+    """
+    # TODO: implement this for other SexpVector types
+    _vectortypes = (RTYPES.LGLSXP,
+                    RTYPES.INTSXP,
+                    RTYPES.REALSXP,
+                    RTYPES.CPLXSXP,
+                    RTYPES.STRSXP)
+
+    if (obj.typeof in _vectortypes) and (obj.typeof != RTYPES.VECSXP):
+        if obj.names.typeof == RTYPES.NILSXP:
+            # no names associated
+            res = np.array(obj)
+        else:
+            res = pd.Series(obj, index=obj.names)
+    else:
+        res = ro.default_converter.rpy2py(obj)
+
+    return res

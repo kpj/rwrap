@@ -2,6 +2,9 @@ import os
 import contextlib
 import subprocess
 
+import pandas as pd
+from pandas.util.testing import assert_frame_equal
+
 import pytest
 
 
@@ -33,8 +36,16 @@ def gather_test_scripts(script_dir='./r_wrapper/tests/scripts'):
 
 
 def assert_file_equality(fname1, fname2):
-    with open(fname1) as fd1, open(fname2) as fd2:
-        assert fd1.read() == fd2.read()
+    fname, ext = os.path.splitext(fname1)
+
+    if ext == '.csv':
+        df1 = pd.read_csv(fname1)
+        df2 = pd.read_csv(fname2)
+
+        assert_frame_equal(df1, df2)
+    else:
+        with open(fname1) as fd1, open(fname2) as fd2:
+            assert fd1.read() == fd2.read()
 
 
 @pytest.mark.parametrize('name,path', gather_test_scripts())
@@ -43,21 +54,29 @@ def test_execution(empty_dir, name, path):
     py_script = os.path.join(path, f'{name}.py')
     r_script = os.path.join(path, f'{name}.R')
 
-    # execute setup script if given
     setup_script = os.path.join(path, 'setup.py')
-    if os.path.exists(setup_script):
-        print('Calling setup')
-        subprocess.call(['python3', setup_script])
 
     # execute Python script
     os.makedirs('cwd_py')
     with chdir('cwd_py'):
+        # execute setup script if given
+        if os.path.exists(setup_script):
+            print('Calling setup')
+            subprocess.call(['python3', setup_script])
+
+        # execute script
         print('Calling Python')
         subprocess.call(['python3', py_script])
 
     # execute R script
     os.makedirs('cwd_r')
     with chdir('cwd_r'):
+        # execute setup script if given
+        if os.path.exists(setup_script):
+            print('Calling setup')
+            subprocess.call(['python3', setup_script])
+
+        # execute script
         print('Calling R')
         subprocess.call(['Rscript', r_script])
 
