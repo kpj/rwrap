@@ -42,7 +42,7 @@ def assert_file_equality(fname1, fname2):
         df1 = pd.read_csv(fname1)
         df2 = pd.read_csv(fname2)
 
-        assert_frame_equal(df1, df2)
+        assert_frame_equal(df1.sort_index(axis=1), df2.sort_index(axis=1))
     else:
         with open(fname1) as fd1, open(fname2) as fd2:
             assert fd1.read() == fd2.read()
