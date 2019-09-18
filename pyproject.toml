@@ -14,6 +14,9 @@ repository = "https://github.com/kpj/r_wrapper"
 [tool.poetry.dependencies]
 python = "^3.6"
 rpy2 = "^3.1"
+pandas = "^0.25.1"
+numpy = "^1.17"
+loguru = "^0.3.2"
 
 
 [tool.poetry.dev-dependencies]
