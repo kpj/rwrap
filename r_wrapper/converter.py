@@ -57,9 +57,12 @@ def _(obj):
     print(obj)
 
     values = [converter.rpy2py(x) for x in obj]
-    keys = obj.names
 
-    return dict(zip(keys, values))
+    if obj.names.typeof == RTYPES.NILSXP:
+        return values
+    else:
+        keys = obj.names
+        return dict(zip(keys, values))
 
 
 @converter.rpy2py.register(FloatSexpVector)
