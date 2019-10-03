@@ -27,24 +27,26 @@ converter = Converter('r_wrapper', template=template_converter)
 @converter.py2rpy.register(list)
 def _(obj):
     logger.debug('py2rpy: list -> <type>Vector')
-    # TODO: handle mixed types better
+    logger.trace(f' object: {obj}')
 
-    if len({type(e) for e in obj}) != 1:
-        raise TypeError(f'Mixed types in {obj}')
+    if len({type(e) for e in obj}) == 1:
+        # has no mixed types
 
-    vector_type_map = {
-        float: ro.FloatVector,
-        int: ro.IntVector,
-        bool: ro.BoolVector,
-        str: ro.StrVector
-    }
+        vector_type_map = {
+            float: ro.FloatVector,
+            int: ro.IntVector,
+            bool: ro.BoolVector,
+            str: ro.StrVector
+        }
 
-    for type_, VectorClass in vector_type_map.items():
-        if isinstance(obj[0], type_):
-            logger.trace(f'Detected: {type_}')
-            return VectorClass([converter.py2rpy(x) for x in obj])
+        for type_, VectorClass in vector_type_map.items():
+            if isinstance(obj[0], type_):
+                logger.trace(f'Detected: {type_}')
+                return VectorClass([converter.py2rpy(x) for x in obj])
 
-    raise TypeError(f'No vector class found for {obj}')
+    # no fitting type found, let R decide
+    logger.warning('Using slow string conversion')
+    return ro.r('c('+','.join([converter.py2rpy(x).r_repr() for x in obj])+')')
 
 
 @converter.py2rpy.register(dict)
