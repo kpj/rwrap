@@ -1,5 +1,7 @@
 """Implement opinionated Py<->R conversion functions."""
 
+import datetime
+
 import numpy as np
 import pandas as pd
 
@@ -77,20 +79,27 @@ def rpy2py_sexp(obj):
     logger.debug('rpy2py: ri.FloatSexpVector -> np.array/pd.Series')
     logger.trace(f' object: {obj}')
 
-    # TODO: implement this for other SexpVector types
-    _vectortypes = (RTYPES.LGLSXP,
-                    RTYPES.INTSXP,
-                    RTYPES.REALSXP,
-                    RTYPES.CPLXSXP,
-                    RTYPES.STRSXP)
+    if 'Date' in obj.rclass:
+        days2date = lambda days_since_epoch: \
+            datetime.datetime.fromtimestamp(days_since_epoch * 24 * 60 * 60).replace(hour=0, minute=0, second=0)
+        dates = [days2date(days_since_epoch) for days_since_epoch in obj]
 
-    if (obj.typeof in _vectortypes) and (obj.typeof != RTYPES.VECSXP):
-        if obj.names.typeof == RTYPES.NILSXP:
-            # no names associated
-            res = np.array(obj)
-        else:
-            res = pd.Series(obj, index=obj.names)
+        res = dates
     else:
-        res = ro.default_converter.rpy2py(obj)
+        # TODO: implement this for other SexpVector types
+        _vectortypes = (RTYPES.LGLSXP,
+                        RTYPES.INTSXP,
+                        RTYPES.REALSXP,
+                        RTYPES.CPLXSXP,
+                        RTYPES.STRSXP)
 
-    return res
+        if (obj.typeof in _vectortypes) and (obj.typeof != RTYPES.VECSXP):
+            if obj.names.typeof == RTYPES.NILSXP:
+                # no names associated
+                res = np.array(obj)
+            else:
+                res = pd.Series(obj, index=obj.names)
+        else:
+            res = ro.default_converter.rpy2py(obj)
+
+    return res if len(res) > 1 else res[0]

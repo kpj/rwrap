@@ -1,5 +1,6 @@
+import datetime
+
 import numpy as np
-import pandas as pd
 
 import rpy2.robjects as ro
 
@@ -30,3 +31,22 @@ def test_rpy2py_lists(r_expr, py_data):
         nptest.assert_allclose(r_data, py_data)
     else:
         assert r_data == py_data
+
+
+@pytest.mark.parametrize('r_expr,py_data', [
+    (
+        'lubridate::ymd("2017-01-31")',
+        datetime.datetime(2017, 1, 31)
+    ),
+    (
+        'c(lubridate::ymd("1982-06-25"), lubridate::dmy("03-Oct-2017"))',
+        [datetime.datetime(1982, 6, 25), datetime.datetime(2017, 10, 3)]
+    ),
+    (
+        'list(foo=lubridate::ymd("2000-01-01"))',
+        {'foo': datetime.datetime(2000, 1, 1)}
+    ),
+])
+def test_rpy2py_dates(r_expr, py_data):
+    r_data = converter.rpy2py(ro.r(r_expr))
+    assert r_data == py_data
