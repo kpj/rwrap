@@ -7,7 +7,8 @@ import pandas as pd
 
 from loguru import logger
 
-from rpy2.rinterface import RTYPES, FloatSexpVector
+import rpy2.rinterface as ri
+from rpy2.rinterface import RTYPES
 
 import rpy2.robjects as ro
 from rpy2.robjects import numpy2ri, pandas2ri
@@ -56,6 +57,14 @@ def _(obj):
         {k: converter.py2rpy(v) for k, v in obj.items()})
 
 
+@converter.py2rpy.register(datetime.datetime)
+def _(obj):
+    logger.debug('py2rpy: datetime.datetime -> lubridate::Date')
+    logger.trace(f' object: {obj}')
+
+    return ro.r(f'lubridate::make_date(year={obj.year}, month={obj.month}, day={obj.day})')
+
+
 @converter.rpy2py.register(ro.vectors.ListVector)
 def _(obj):
     logger.debug('rpy2py: ro.ListVector -> dict/list')
@@ -70,7 +79,7 @@ def _(obj):
         return values
 
 
-@converter.rpy2py.register(FloatSexpVector)
+@converter.rpy2py.register(ri.FloatSexpVector)
 def rpy2py_sexp(obj):
     """Convert named arrays while keeping the names.
 

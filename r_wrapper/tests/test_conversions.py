@@ -23,14 +23,24 @@ from ..converter import converter
         'list(a=1, b=2, c=3)',
         {'a': [1], 'b': [2], 'c': [3]}
     ),
+    (
+        'c(1, "a")',
+        ['1', 'a']  # adjust for R's type coercion
+    ),
 ])
-def test_rpy2py_lists(r_expr, py_data):
-    r_data = converter.rpy2py(ro.r(r_expr))
+def test_lists(r_expr, py_data):
+    r_data = ro.r(r_expr)
 
-    if isinstance(r_data, np.ndarray):
-        nptest.assert_allclose(r_data, py_data)
-    else:
-        assert r_data == py_data
+    # rpy2py
+    r_data_conv = converter.rpy2py(r_data)
+    if isinstance(r_data_conv, np.ndarray):
+        r_data_conv = r_data_conv.tolist()
+    assert r_data_conv == py_data
+
+    # py2rpy
+    py_data_conv = converter.py2rpy(py_data)
+    # TODO: fix this
+    # assert r_data.r_repr() == py_data_conv.r_repr()
 
 
 @pytest.mark.parametrize('r_expr,py_data', [
@@ -47,6 +57,13 @@ def test_rpy2py_lists(r_expr, py_data):
         {'foo': datetime.datetime(2000, 1, 1)}
     ),
 ])
-def test_rpy2py_dates(r_expr, py_data):
-    r_data = converter.rpy2py(ro.r(r_expr))
-    assert r_data == py_data
+def test_dates(r_expr, py_data):
+    r_data = ro.r(r_expr)
+
+    # rpy2py
+    r_data_conv = converter.rpy2py(r_data)
+    assert r_data_conv == py_data
+
+    # py2rpy
+    py_data_conv = converter.py2rpy(py_data)
+    assert r_data.r_repr() == py_data_conv.r_repr()
