@@ -27,6 +27,13 @@ ensembl = biomaRt.useMart('ENSEMBL_MART_SNP', dataset='hsapiens_snp')
 df = biomaRt.getBM(
     attributes=['refsnp_id', 'chr_name', 'chrom_start', 'consequence_type_tv'],
     filters='snp_filter', values=snp_list, mart=ensembl)
+
+print(df)  # pandas.DataFrame
+#    refsnp_id  chr_name  chrom_start     consequence_type_tv
+# 1   rs479445         1     60875960          intron_variant
+# 2   rs479445         1     60875960  NMD_transcript_variant
+# 3  rs4948523        10     58579338          intron_variant
+# 4  rs7329174        13     40983974          intron_variant
 ```
 
 Check the `r_wrapper/tests/` directory for more examples showing how to rewrite R scripts in Python.
