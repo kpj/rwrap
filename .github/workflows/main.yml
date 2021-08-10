@@ -31,6 +31,14 @@ jobs:
       - name: Lint package
         run: poetry run black --check --diff .
 
+      - uses: r-lib/actions/setup-r@v1
+
+      - name: Install R dependencies
+        shell: Rscript {0}
+        run: |
+          install.packages(c("remotes"))
+          remotes::install_github("jimhester/lintr")
+
       - name: Lint R test scripts
         shell: Rscript {0}
         run: |
