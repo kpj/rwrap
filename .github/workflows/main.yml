@@ -30,6 +30,12 @@ jobs:
 
       - name: Lint package
         run: poetry run black --check --diff .
+
+      - name: Lint R test scripts
+        shell: Rscript {0}
+        run: |
+          lintr::lint_dir("tests/")
+          quit(save = "no", status = length(lintr::lint_dir("tests/")))
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
