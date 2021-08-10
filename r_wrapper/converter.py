@@ -2,15 +2,11 @@
 
 import datetime
 
-import numpy as np
-import pandas as pd
-
 from loguru import logger
 
-import rpy2.rinterface as ri
-from rpy2.rinterface import RTYPES
-
 import rpy2.robjects as ro
+import rpy2.rinterface as ri
+
 from rpy2.robjects import numpy2ri, pandas2ri
 
 from rpy2.robjects.conversion import (
@@ -24,93 +20,130 @@ template_converter += pandas2ri.converter
 converter = Converter('r_wrapper', template=template_converter)
 
 
+# None type
+@converter.py2rpy.register(type(None))
+def _(obj):
+    logger.trace(f'py2rpy::None')
+    return ri.NULLType
+
+
+@converter.rpy2py.register(ri.NULLType)
+def _(obj):
+    logger.trace(f'rpy2py::ri.NULLType')
+    return None
+
+
+# special classes
+def convert_dates(obj):
+    days2date = lambda days_since_epoch: \
+        datetime.datetime.fromtimestamp(days_since_epoch * 24 * 60 * 60).replace(hour=0, minute=0, second=0)
+    return [days2date(days_since_epoch) for days_since_epoch in obj]
+
+
+CLASS_CONVERTERS = {
+    'Date': convert_dates,
+}
+
+
+@converter.py2rpy.register(datetime.datetime)
+def _(obj):
+    logger.trace(f'py2rpy::datetime.datetime')
+
+    return ro.r(f'lubridate::make_date(year={obj.year}, month={obj.month}, day={obj.day})')
+
+
+# vectors
 @converter.py2rpy.register(list)
 def _(obj):
-    logger.debug('py2rpy: list -> <type>Vector')
-    logger.trace(f' object: {obj}')
+    logger.trace('py2rpy::list')
 
     if len({type(e) for e in obj}) == 1:
         # has no mixed types
 
         vector_type_map = {
-            float: ro.FloatVector,
-            int: ro.IntVector,
             bool: ro.BoolVector,
+            int: ro.IntVector,
+            float: ro.FloatVector,
             str: ro.StrVector
         }
 
         for type_, VectorClass in vector_type_map.items():
             if isinstance(obj[0], type_):
-                logger.trace(f'Detected: {type_}')
                 return VectorClass([converter.py2rpy(x) for x in obj])
 
-    # no fitting type found, let R decide
-    logger.warning('Using slow string conversion')
-    return ro.r('c('+','.join([converter.py2rpy(x).r_repr() for x in obj])+')')
+        raise NotImplementedError(f'No list conversion implemented for type {type(obj[0])}')
+
+    # heterogeneous types, use R list
+    return ro.ListVector(
+        {i+1: converter.py2rpy(v) for i, v in enumerate(obj)})
 
 
+@converter.rpy2py.register(ro.Vector)
+@converter.rpy2py.register(ri.BoolSexpVector)
+@converter.rpy2py.register(ri.IntSexpVector)
+@converter.rpy2py.register(ri.FloatSexpVector)
+@converter.rpy2py.register(ri.StrSexpVector)
+def _(obj):
+    logger.trace(f'rpy2py::ro.Vector[{list(obj.rclass)}]')
+
+    # handle special classes
+    for class_, conv_func in CLASS_CONVERTERS.items():
+        if class_ in obj.rclass:
+            logger.trace(f'Using custom class converter for {class_}')
+            obj = conv_func(obj)
+            break
+    else:
+        # if not special class was detected, we try primitives
+        if {'numeric', 'character', 'logical'} & set(obj.rclass):
+            logger.trace('Using default class converter')
+
+            keys = converter.rpy2py(obj.names)
+            values = [converter.rpy2py(x) for x in obj]
+
+            if keys is not None:
+                # could accidentally be atomic
+                if not isinstance(keys, list):
+                    keys = [keys]
+
+                obj = dict(zip(keys, values))
+            else:
+                obj = values
+        else:
+            # if no converter was found, we just return the raw object
+            logger.trace(f'Skipping conversion for class {list(obj.rclass)}')
+
+    # vector of length 1 in R should be atomic type in Python
+    if not isinstance(obj, dict) and len(obj) == 1:
+        return obj[0]
+    return obj
+
+
+# dicts
 @converter.py2rpy.register(dict)
 def _(obj):
-    logger.debug('py2rpy: dict -> ro.ListVector')
-    logger.trace(f' object: {obj}')
-    logger.trace(f' member types: {[type(o) for o in obj.values()]}')
+    logger.trace('py2rpy::dict')
 
-    return ro.vectors.ListVector(
+    return ro.ListVector(
         {k: converter.py2rpy(v) for k, v in obj.items()})
 
 
-@converter.py2rpy.register(datetime.datetime)
+@converter.rpy2py.register(ro.ListVector)
 def _(obj):
-    logger.debug('py2rpy: datetime.datetime -> lubridate::Date')
-    logger.trace(f' object: {obj}')
+    logger.trace(f'rpy2py::ro.ListVector[{list(obj.rclass)}]')
 
-    return ro.r(f'lubridate::make_date(year={obj.year}, month={obj.month}, day={obj.day})')
+    # do not convert complicated objects
+    if not {'list'} & set(obj.rclass):
+        logger.trace('Skipping conversion')
+        return obj
 
-
-@converter.rpy2py.register(ro.vectors.ListVector)
-def _(obj):
-    logger.debug('rpy2py: ro.ListVector -> dict/list')
-    logger.trace(f' object: {obj}')
-
-    keys = obj.names
+    keys = converter.rpy2py(obj.names)
     values = [converter.rpy2py(x) for x in obj]
 
-    if isinstance(keys, np.ndarray) or keys.typeof != RTYPES.NILSXP:
+    if keys is not None:
+        # could accidentally be atomic
+        if not isinstance(keys, list):
+            keys = [keys]
+
         return dict(zip(keys, values))
     else:
         return values
-
-
-@converter.rpy2py.register(ri.FloatSexpVector)
-def rpy2py_sexp(obj):
-    """Convert named arrays while keeping the names.
-
-    This function is adapted from 'rpy2/robjects/numpy2ri.py'.
-    """
-    logger.debug('rpy2py: ri.FloatSexpVector -> np.array/pd.Series')
-    logger.trace(f' object: {obj}')
-
-    if 'Date' in obj.rclass:
-        days2date = lambda days_since_epoch: \
-            datetime.datetime.fromtimestamp(days_since_epoch * 24 * 60 * 60).replace(hour=0, minute=0, second=0)
-        dates = [days2date(days_since_epoch) for days_since_epoch in obj]
-
-        res = dates
-    else:
-        # TODO: implement this for other SexpVector types
-        _vectortypes = (RTYPES.LGLSXP,
-                        RTYPES.INTSXP,
-                        RTYPES.REALSXP,
-                        RTYPES.CPLXSXP,
-                        RTYPES.STRSXP)
-
-        if (obj.typeof in _vectortypes) and (obj.typeof != RTYPES.VECSXP):
-            if obj.names.typeof == RTYPES.NILSXP:
-                # no names associated
-                res = np.array(obj)
-            else:
-                res = pd.Series(obj, index=obj.names)
-        else:
-            res = ro.default_converter.rpy2py(obj)
-
-    return res if len(res) > 1 else res[0]
