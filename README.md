@@ -1,7 +1,7 @@
-# r_wrapper
+# rwrap
 
-[![pypi version](https://img.shields.io/pypi/v/r_wrapper.svg)](https://pypi.org/project/r_wrapper/)
-[![license](https://img.shields.io/pypi/l/r_wrapper.svg)](https://pypi.org/project/r_wrapper/)
+[![pypi version](https://img.shields.io/pypi/v/rwrap.svg)](https://pypi.org/project/rwrap/)
+[![license](https://img.shields.io/pypi/l/rwrap.svg)](https://pypi.org/project/rwrap/)
 
 Warning: still highly experimental and likely to break.
 
@@ -11,7 +11,7 @@ Seamlessly integrate R packages in Python by allowing intuitive importing and pr
 ## Installation
 
 ```bash
-pip install r_wrapper
+pip install rwrap
 ```
 
 
@@ -19,7 +19,7 @@ pip install r_wrapper
 
 For example, accessing `biomaRt` can be as simple as follows:
 ```python
-from r_wrapper import biomaRt
+from rwrap import biomaRt
 
 snp_list = ['rs7329174', 'rs4948523', 'rs479445']
 ensembl = biomaRt.useMart('ENSEMBL_MART_SNP', dataset='hsapiens_snp')
@@ -36,15 +36,15 @@ print(df)  # pandas.DataFrame
 # 4  rs7329174        13     40983974          intron_variant
 ```
 
-Check the `r_wrapper/tests/` directory for more examples showing how to rewrite R scripts in Python.
+Check the `tests/` directory for more examples showing how to rewrite R scripts in Python.
 
 
 ## Tests
 
 A comprehensive test suite aims at providing stability and avoiding regressions.
-The examples in `r_wrapper/tests/` are validated using `pytest`.
+The examples in `tests/` are validated using `pytest`.
 
 Run tests as follows:
 ```bash
-$ pytest r_wrapper/
+$ pytest tests/
 ```

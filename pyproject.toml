@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "r_wrapper"
+name = "rwrap"
 version = "0.0.2"
 description = "Seamlessly integrate R packages in Python by allowing intuitive importing and providing opinionated data type conversion functions."
 
-authors = ["kpj <kpjkpjkpjkpjkpjkpj@gmail.com>"]
+authors = ["kpj <kim.philipp.jablonski@gmail.com>"]
 license = "MIT"
 
 readme = "README.md"
 
-repository = "https://github.com/kpj/r_wrapper"
+repository = "https://github.com/kpj/rwrap"
 
 
 [tool.poetry.dependencies]
