@@ -25,19 +25,20 @@ jobs:
           poetry install
           poetry build
 
-      - name: Test package
-        run: poetry run pytest -v tests/
-
-      - name: Lint package
-        run: poetry run black --check --diff .
-
       - uses: r-lib/actions/setup-r@v1
 
       - name: Install R dependencies
         shell: Rscript {0}
         run: |
-          install.packages(c("remotes"))
+          install.packages(c("remotes", "BiocManager"))
           remotes::install_github("jimhester/lintr")
+          BiocManager::install(c("biomaRt", "DESeq2", "msigdbr"))
+
+      - name: Test package
+        run: poetry run pytest -v tests/
+
+      - name: Lint package
+        run: poetry run black --check --diff .
 
       - name: Lint R test scripts
         shell: Rscript {0}
