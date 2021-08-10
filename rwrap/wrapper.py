@@ -27,3 +27,6 @@ class RLibraryWrapper:
                 return cv.rpy2py(res)
 
         return wrapper
+
+    def __repr__(self) -> str:
+        return f"<module '{self.lib_name}' from R>"
