@@ -12,23 +12,14 @@ repository = "https://github.com/kpj/rwrap"
 
 
 [tool.poetry.dependencies]
-python = "^3.6"
-rpy2 = "^3.1"
-pandas = "^0.25.1"
-numpy = "^1.17"
-loguru = "^0.3.2"
+python = "^3.8"
+rpy2 = "^3.4.5"
+pandas = "^1.3.1"
+numpy = "^1.21.1"
+loguru = "^0.5.3"
+geopandas = "^0.9.0"
+ipython = "^7.26.0"
 
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.1"
-
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
-
-
-[tool.dephell.main]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
-# execute `dephell deps convert` to generate setup.py
+pytest = "^6.2.4"
