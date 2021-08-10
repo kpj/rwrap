@@ -26,7 +26,8 @@ ensembl = biomaRt.useMart('ENSEMBL_MART_SNP', dataset='hsapiens_snp')
 
 df = biomaRt.getBM(
     attributes=['refsnp_id', 'chr_name', 'chrom_start', 'consequence_type_tv'],
-    filters='snp_filter', values=snp_list, mart=ensembl)
+    filters='snp_filter', values=snp_list, mart=ensembl
+)
 
 print(df)  # pandas.DataFrame
 #    refsnp_id  chr_name  chrom_start     consequence_type_tv
