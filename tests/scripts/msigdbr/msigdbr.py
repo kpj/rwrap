@@ -1,4 +1,4 @@
-from r_wrapper import msigdbr
+from rwrap import msigdbr
 
 
 df = msigdbr.msigdbr(species="Homo sapiens", category=["C2"])

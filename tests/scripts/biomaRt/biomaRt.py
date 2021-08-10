@@ -1,4 +1,4 @@
-from r_wrapper import biomaRt
+from rwrap import biomaRt
 
 
 snp_list = ["rs7329174", "rs4948523", "rs479445"]

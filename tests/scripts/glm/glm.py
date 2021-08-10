@@ -1,6 +1,6 @@
 import pandas as pd
 
-from r_wrapper import stats
+from rwrap import stats
 
 
 df = pd.read_csv("data.csv")

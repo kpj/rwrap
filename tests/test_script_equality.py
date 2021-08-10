@@ -25,7 +25,7 @@ def empty_dir(tmp_path):
         yield
 
 
-def gather_test_scripts(script_dir="./r_wrapper/tests/scripts"):
+def gather_test_scripts(script_dir="./tests/scripts"):
     script_list = []
     for entry in os.scandir(script_dir):
         if entry.name.startswith("__"):

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from r_wrapper import base, stats, DESeq2
+from rwrap import base, stats, DESeq2
 
 
 # read data

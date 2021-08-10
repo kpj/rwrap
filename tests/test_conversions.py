@@ -9,7 +9,7 @@ import pytest
 import numpy.testing as npt
 import pandas.testing as pdt
 
-from ..converter import converter
+from rwrap.converter import converter
 
 
 @pytest.mark.parametrize(
