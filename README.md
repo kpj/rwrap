@@ -1,11 +1,11 @@
 # rwrap
 
-[![pypi version](https://img.shields.io/pypi/v/rwrap.svg)](https://pypi.org/project/rwrap/)
-[![license](https://img.shields.io/pypi/l/rwrap.svg)](https://pypi.org/project/rwrap/)
+[![PyPI](https://img.shields.io/pypi/v/rwrap.svg?style=flat)](https://pypi.python.org/pypi/rwrap)
+[![Tests](https://github.com/kpj/rwrap/workflows/Tests/badge.svg)](https://github.com/kpj/rwrap/actions)
 
-Warning: still highly experimental and likely to break.
+> Warning: still a work-in-progress, always happy about issues and PRs
 
-Seamlessly integrate R packages in Python by allowing intuitive importing and providing opinionated data type conversion functions.
+A thin wrapper around rpy2 with strong opinions on how data types should be converted.
 
 
 ## Installation
@@ -45,6 +45,7 @@ A comprehensive test suite aims at providing stability and avoiding regressions.
 The examples in `tests/` are validated using `pytest`.
 
 Run tests as follows:
+
 ```bash
 $ pytest tests/
 ```
