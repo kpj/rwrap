@@ -20,6 +20,7 @@ class RLibraryWrapper:
 
     def __getattr__(self, name: str) -> Callable:
         """Access method of R package."""
+
         def wrapper(*args, **kwargs):
             logger.debug("Calling {name}", name=name)
             with localconverter(converter) as cv:

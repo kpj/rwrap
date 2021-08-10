@@ -9,10 +9,10 @@ import rpy2.rinterface as ri
 from .wrapper import RLibraryWrapper
 
 
-__version__ = metadata.version('rwrap')
+__version__ = metadata.version("rwrap")
 
 logger.remove()
-logger.add(sys.stderr, level='WARNING')
+logger.add(sys.stderr, level="WARNING")
 
 
 def __getattr__(name: str) -> RLibraryWrapper:
