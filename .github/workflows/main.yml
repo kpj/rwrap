@@ -39,21 +39,14 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           Rscript -e 'install.packages("remotes")'
-          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
+          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04", path = "tests/scripts/")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
 
       - name: Install R dependencies
         shell: Rscript {0}
         run: |
-          install.packages("BiocManager")
-          BiocManager::install(c(
-            "lintr",
-            "biomaRt",
-            "DESeq2",
-            "lubridate",
-            "msigdbr"
-          ))
+          remotes::install_deps(pkgdir = "tests/scripts/", dependencies = TRUE)
 
       - name: Test package
         run: poetry run pytest -v tests/

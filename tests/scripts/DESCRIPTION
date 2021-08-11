@@ -1,0 +1,7 @@
+BiocViews:
+Imports:
+    lintr,
+    biomaRt,
+    DESeq2,
+    lubridate,
+    msigdbr
