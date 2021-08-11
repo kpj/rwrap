@@ -3,9 +3,9 @@
 [![PyPI](https://img.shields.io/pypi/v/rwrap.svg?style=flat)](https://pypi.python.org/pypi/rwrap)
 [![Tests](https://github.com/kpj/rwrap/workflows/Tests/badge.svg)](https://github.com/kpj/rwrap/actions)
 
-> Warning: still a work-in-progress, always happy about issues and PRs
+A thin wrapper around [rpy2](https://rpy2.github.io/doc/latest/html/index.html) with strong opinions on how data types should be converted. This enables easy usage of R packages from Python with no boilerplate code.
 
-A thin wrapper around rpy2 with strong opinions on how data types should be converted.
+> Warning: still work-in-progress, issues and PRs welcome
 
 
 ## Installation
