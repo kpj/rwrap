@@ -32,9 +32,8 @@ jobs:
       - name: Install R dependencies
         shell: Rscript {0}
         run: |
-          install.packages(c("remotes", "BiocManager"))
-          remotes::install_github("jimhester/lintr")
-          BiocManager::install(c("biomaRt", "DESeq2", "msigdbr"))
+          install.packages("BiocManager")
+          BiocManager::install(c("lintr", "biomaRt", "DESeq2", "msigdbr"))
 
       - name: Test package
         run: poetry run pytest -v tests/
