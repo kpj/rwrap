@@ -67,7 +67,7 @@ def test_execution(empty_dir, name, path):
         # execute script
         print("Calling Python")
         proc_py = subprocess.run(
-            ["python3", py_script], capture_output=True, check=True
+            ["python3", py_script], stdin=subprocess.PIPE, check=True
         )
 
     # execute R script
@@ -80,11 +80,10 @@ def test_execution(empty_dir, name, path):
 
         # execute script
         print("Calling R")
-        proc_r = subprocess.run(["Rscript", r_script], capture_output=True, check=True)
+        proc_r = subprocess.run(["Rscript", r_script], stdin=subprocess.PIPE, check=True)
 
     # assert that scripts had same output
     assert proc_r.stdout == proc_py.stdout
-    # assert proc_r.stderr == proc_py.stderr
 
     # assert that both scripts created same files
     assert os.listdir("cwd_r") == os.listdir("cwd_py")
