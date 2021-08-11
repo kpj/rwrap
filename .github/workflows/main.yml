@@ -27,17 +27,21 @@ jobs:
           poetry install
           poetry build
 
+      - name: Set R Library home on Linux
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p /__w/_temp/Library
+          echo ".libPaths('/__w/_temp/Library')" > ~/.Rprofile
+
+      - uses: r-lib/actions/setup-r@v1
+
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
         run: |
-          mkdir /__w/_temp/Library
-          echo ".libPaths('/__w/_temp/Library')" > ~/.Rprofile
           Rscript -e 'install.packages("remotes")'
           sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
           echo $sysreqs
           sudo -s eval "$sysreqs"
-
-      - uses: r-lib/actions/setup-r@v1
 
       - name: Install R dependencies
         shell: Rscript {0}
