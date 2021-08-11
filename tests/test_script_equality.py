@@ -28,7 +28,7 @@ def empty_dir(tmp_path):
 def gather_test_scripts(script_dir="./tests/scripts"):
     script_list = []
     for entry in os.scandir(script_dir):
-        if entry.name.startswith("__"):
+        if entry.name.startswith("__") or entry.name == "DESCRIPTION":
             continue
 
         script_list.append((entry.name, os.path.realpath(entry.path)))
