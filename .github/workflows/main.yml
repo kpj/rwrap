@@ -33,7 +33,13 @@ jobs:
         shell: Rscript {0}
         run: |
           install.packages("BiocManager")
-          BiocManager::install(c("lintr", "biomaRt", "DESeq2", "msigdbr"))
+          BiocManager::install(c(
+            "lintr",
+            "biomaRt",
+            "DESeq2",
+            "lubridate",
+            "msigdbr"
+          ))
 
       - name: Test package
         run: poetry run pytest -v tests/
