@@ -80,7 +80,9 @@ def test_execution(empty_dir, name, path):
 
         # execute script
         print("Calling R")
-        proc_r = subprocess.run(["Rscript", r_script], stdin=subprocess.PIPE, check=True)
+        proc_r = subprocess.run(
+            ["Rscript", r_script], stdin=subprocess.PIPE, check=True
+        )
 
     # assert that scripts had same output
     assert proc_r.stdout == proc_py.stdout
