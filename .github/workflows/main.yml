@@ -30,8 +30,8 @@ jobs:
       - name: Set R Library home on Linux
         if: runner.os == 'Linux'
         run: |
-          mkdir -p /__w/_temp/Library
-          echo ".libPaths('/__w/_temp/Library')" > ~/.Rprofile
+          mkdir -p ~/R_library
+          echo ".libPaths('~/R_library')" > ~/.Rprofile
 
       - uses: r-lib/actions/setup-r@v1
 
