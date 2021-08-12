@@ -4,6 +4,7 @@ from typing import Callable
 
 from loguru import logger
 
+import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.robjects.conversion import localconverter
 
@@ -15,8 +16,7 @@ class RLibraryWrapper:
 
     def __init__(self, lib_name: str) -> None:
         """Import R package."""
-        self.lib_name = lib_name.replace("_", ".")
-        self.lib = importr(self.lib_name)
+        self.__lib = importr(lib_name.replace("_", "."))
 
     def __getattr__(self, name: str) -> Callable:
         """Access method of R package."""
@@ -24,10 +24,11 @@ class RLibraryWrapper:
         def wrapper(*args, **kwargs):
             logger.debug("Calling {name}", name=name)
             with localconverter(converter) as cv:
-                res = getattr(self.lib, name)(*args, **kwargs)
+                res = getattr(self.__lib, name)(*args, **kwargs)
                 return cv.rpy2py(res)
 
         return wrapper
 
     def __repr__(self) -> str:
-        return f"<module '{self.lib_name}' from R>"
+        lib_path = ro.r(f"find.package('{self.__lib.__rname__}')")[0]
+        return f"<module '{self.__lib.__rname__}' from '{lib_path}'>"
