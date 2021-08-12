@@ -22,7 +22,7 @@ class RLibraryWrapper:
         """Access method of R package."""
 
         def wrapper(*args, **kwargs):
-            logger.debug("Calling {name}", name=name)
+            logger.trace("Calling {name}", name=name)
             with localconverter(converter) as cv:
                 res = getattr(self.__lib, name)(*args, **kwargs)
                 return cv.rpy2py(res)
