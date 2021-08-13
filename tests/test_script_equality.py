@@ -35,16 +35,16 @@ def gather_test_scripts(script_dir="./tests/scripts"):
     return script_list
 
 
-def assert_file_equality(fname1, fname2):
-    fname, ext = os.path.splitext(fname1)
+def assert_file_equality(fname_r, fname_py):
+    fname, ext = os.path.splitext(fname_r)
 
     if ext == ".csv":
-        df1 = pd.read_csv(fname1)
-        df2 = pd.read_csv(fname2)
+        df_r = pd.read_csv(fname_r, dtype={"geometry": "str"})
+        df_py = pd.read_csv(fname_py)
 
-        assert_frame_equal(df1.sort_index(axis=1), df2.sort_index(axis=1))
+        assert_frame_equal(df_r.sort_index(axis=1), df_py.sort_index(axis=1))
     else:
-        with open(fname1) as fd1, open(fname2) as fd2:
+        with open(fname_r) as fd1, open(fname_py) as fd2:
             assert fd1.read() == fd2.read()
 
 
