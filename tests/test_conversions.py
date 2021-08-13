@@ -16,6 +16,8 @@ from rwrap.converter import converter
     "r_expr,py_data",
     [
         # lists/vectors
+        ("c(42)", 42),
+        ("list(42)", [42]),
         ("c(TRUE, FALSE)", [True, False]),
         ("c(1, 2, 3)", [1, 2, 3]),
         ("list(1, 2, 3)", [1, 2, 3]),
