@@ -48,9 +48,6 @@ jobs:
         run: |
           remotes::install_deps(pkgdir = "tests/scripts/", dependencies = TRUE)
 
-      - name: Test package
-        run: poetry run pytest -v tests/
-
       - name: Lint package
         run: poetry run black --check --diff .
 
@@ -59,6 +56,9 @@ jobs:
         run: |
           lintr::lint_dir("tests/")
           quit(save = "no", status = length(lintr::lint_dir("tests/")))
+
+      - name: Test package
+        run: poetry run pytest -v tests/
   deploy:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: test
