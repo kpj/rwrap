@@ -20,7 +20,7 @@ from rpy2.robjects.conversion import converter as template_converter, Converter
 # setup converter
 template_converter += numpy2ri.converter
 template_converter += pandas2ri.converter
-converter = Converter("r_wrapper", template=template_converter)
+converter = Converter("rwrap", template=template_converter)
 
 
 # None type
