@@ -9,6 +9,8 @@ import pytest
 import numpy.testing as npt
 import pandas.testing as pdt
 
+from shapely import geometry
+
 from rwrap.converter import converter
 
 
@@ -42,6 +44,21 @@ from rwrap.converter import converter
         (
             'list(foo = lubridate::ymd("2000-01-01"))',
             {"foo": datetime.datetime(2000, 1, 1)},
+        ),
+        # geometry
+        ("sf::st_point(c(1, 2))", geometry.Point(1, 2)),
+        (
+            "sf::st_polygon(list(matrix(c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0), ncol = 2, byrow = TRUE)))",
+            geometry.Polygon([(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)]),
+        ),
+        (
+            "sf::st_multipolygon(list(sf::st_polygon(list(matrix(c(0, 0, 10, 0, 10, 10, 0, 10, 0, 0), ncol = 2, byrow = TRUE))), sf::st_polygon(list(matrix(c(1, 2, 3, 4, 5, 6, 1, 2), ncol = 2, byrow = TRUE)))))",
+            geometry.MultiPolygon(
+                [
+                    geometry.Polygon([(0, 0), (10, 0), (10, 10), (0, 10), (0, 0)]),
+                    geometry.Polygon([(1, 2), (3, 4), (5, 6), (1, 2)]),
+                ]
+            ),
         ),
     ],
 )

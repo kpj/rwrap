@@ -4,6 +4,11 @@ import datetime
 
 from loguru import logger
 
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+from shapely import geometry
+
 import rpy2.robjects as ro
 import rpy2.rinterface as ri
 
@@ -39,8 +44,71 @@ def convert_dates(obj):
     return [days2date(days_since_epoch) for days_since_epoch in obj]
 
 
+def convert_geometry(obj):
+    """Convert an sfg (simple feature geometry) object.
+
+    Can have one of these dimensionalities:
+    * 2D: single point
+    * 3D: set of points (each row containing one point)
+    * 4D: list
+
+    Polygons consist of a hull (set of points) and optionally set set of holes (each hole is yet again a set of points)
+
+    More details: https://r-spatial.github.io/sf/articles/sf1.html#how-simple-features-in-r-are-organized-1
+    """
+    # determine object properties
+    rlcass = list(obj.rclass)
+    assert len(rlcass) == 3, rlcass
+    assert rlcass[-1] == "sfg", rlcass
+
+    dimension = rlcass[0]
+    type_ = rlcass[1]
+
+    assert dimension == "XY", "Other dimensions not yet implemented"
+
+    # convert object
+    if type_ == "POINT":
+        return geometry.Point(obj)
+    elif type_ == "POLYGON":
+        hole_list = []
+        if obj.typeof == ri.RTYPES.VECSXP:
+            hull = np.asarray(obj[0])
+
+            if len(obj) > 1:
+                for o in obj[1:]:
+                    hole_list.append(np.asarray(o))
+        elif obj.typeof == ri.RTYPES.REALSXP:
+            hull = np.asarray(obj)
+
+        return geometry.Polygon(hull, hole_list)
+    elif type_ == "MULTIPOLYGON":
+        poly_list = []
+        for entry in obj:
+            # entry class is `list` otherwise
+            entry.rclass = ri.StrSexpVector([dimension, "POLYGON", "sfg"])
+
+            p = convert_geometry(entry)
+            poly_list.append(p)
+
+        return geometry.MultiPolygon(poly_list)
+    else:
+        raise TypeError(f"Invalid geometry type: {type_}")
+
+
+# TODO: make use of `NameClassMap`
 CLASS_CONVERTERS = {
     "Date": convert_dates,
+    "sf": lambda obj: gpd.GeoDataFrame(
+        pd.DataFrame(
+            {column: converter.rpy2py(data) for column, data in zip(obj.names, obj)}
+        )
+    ),
+    "sfc": lambda obj: gpd.GeoSeries([convert_geometry(o) for o in obj]),
+    "POINT": lambda obj: [convert_geometry(obj)],
+    "POLYGON": lambda obj: [convert_geometry(obj)],
+    "MULTIPOLYGON": lambda obj: [convert_geometry(obj)],
+    "data.frame": lambda obj: converter.rpy2py(ro.DataFrame(obj)),
+    "matrix": lambda obj: np.array(obj),
 }
 
 
@@ -81,22 +149,26 @@ def _(obj):
 
 
 @converter.rpy2py.register(ro.Vector)
+@converter.rpy2py.register(ro.ListVector)
 @converter.rpy2py.register(ri.BoolSexpVector)
 @converter.rpy2py.register(ri.IntSexpVector)
 @converter.rpy2py.register(ri.FloatSexpVector)
 @converter.rpy2py.register(ri.StrSexpVector)
+@converter.rpy2py.register(ri.ListSexpVector)
 def _(obj):
     logger.trace(f"rpy2py::ro.Vector[{list(obj.rclass)}]")
+    rclass = set(obj.rclass)
+    is_atomic = True
 
     # handle special classes
     for class_, conv_func in CLASS_CONVERTERS.items():
-        if class_ in obj.rclass:
+        if class_ in rclass:
             logger.trace(f"Using custom class converter for {class_}")
             obj = conv_func(obj)
             break
     else:
         # if not special class was detected, we try primitives
-        if {"numeric", "character", "logical"} & set(obj.rclass):
+        if {"numeric", "character", "logical", "list"} & rclass:
             logger.trace("Using default class converter")
 
             keys = converter.rpy2py(obj.names)
@@ -110,12 +182,15 @@ def _(obj):
                 obj = dict(zip(keys, values))
             else:
                 obj = values
+
+            if "list" in rclass:
+                is_atomic = False
         else:
             # if no converter was found, we just return the raw object
-            logger.trace(f"Skipping conversion for class {list(obj.rclass)}")
+            logger.trace(f"Skipping conversion for class {rclass}")
 
     # vector of length 1 in R should be atomic type in Python
-    if not isinstance(obj, dict) and len(obj) == 1:
+    if not isinstance(obj, dict) and len(obj) == 1 and is_atomic:
         return obj[0]
     return obj
 
@@ -126,25 +201,3 @@ def _(obj):
     logger.trace("py2rpy::dict")
 
     return ro.ListVector({k: converter.py2rpy(v) for k, v in obj.items()})
-
-
-@converter.rpy2py.register(ro.ListVector)
-def _(obj):
-    logger.trace(f"rpy2py::ro.ListVector[{list(obj.rclass)}]")
-
-    # do not convert complicated objects
-    if not {"list"} & set(obj.rclass):
-        logger.trace("Skipping conversion")
-        return obj
-
-    keys = converter.rpy2py(obj.names)
-    values = [converter.rpy2py(x) for x in obj]
-
-    if keys is not None:
-        # could accidentally be atomic
-        if not isinstance(keys, list):
-            keys = [keys]
-
-        return dict(zip(keys, values))
-    else:
-        return values

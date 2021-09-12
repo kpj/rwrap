@@ -1,7 +1,9 @@
 BiocViews:
 Imports:
     lintr,
+    tidyverse,
     biomaRt,
     DESeq2,
+    eurostat,
     lubridate,
     msigdbr
