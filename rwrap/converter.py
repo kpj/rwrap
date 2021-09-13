@@ -52,7 +52,7 @@ def convert_geometry(obj):
     * 3D: set of points (each row containing one point)
     * 4D: list
 
-    Polygons consist of a hull (set of points) and optionally set set of holes (each hole is yet again a set of points)
+    Polygons consist of a hull (set of points) and optionally a set of holes (each hole is yet again a set of points)
 
     More details: https://r-spatial.github.io/sf/articles/sf1.html#how-simple-features-in-r-are-organized-1
     """
