@@ -17,7 +17,7 @@ pip install rwrap
 
 ## Usage
 
-For example, accessing Bioconductor's [biomaRt](https://bioconductor.org/packages/release/bioc/html/biomaRt.html) can be as simple as follows:
+For example, accessing Bioconductor's [biomaRt](https://bioconductor.org/packages/release/bioc/html/biomaRt.html) package can be as simple as follows:
 ```python
 from rwrap import biomaRt
 
