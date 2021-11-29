@@ -14,19 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Build package
-        run: |
-          poetry install
-          poetry build
-
       - name: Set R Library home on Linux
         if: runner.os == 'Linux'
         run: |
@@ -47,6 +34,19 @@ jobs:
         shell: Rscript {0}
         run: |
           remotes::install_deps(pkgdir = "tests/scripts/", dependencies = TRUE)
+          
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Build package
+        run: |
+          poetry install
+          poetry build
 
       - name: Lint package
         run: poetry run black --check --diff .
