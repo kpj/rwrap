@@ -11,6 +11,12 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+      # https://github.com/actions/virtual-environments/issues/4799
+      - name: GA fixes
+        run: |
+          sudo apt-get update
+          sudo apt-get remove mysql* && sudo apt-get install -y mysql-server
+    
       - name: Checkout repository
         uses: actions/checkout@v2
 
