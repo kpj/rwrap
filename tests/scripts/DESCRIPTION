@@ -1,3 +1,4 @@
+Package: rwrap
 BiocViews:
 Imports:
     lintr,
