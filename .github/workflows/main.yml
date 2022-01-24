@@ -36,9 +36,17 @@ jobs:
           echo $sysreqs
           sudo -s eval "$sysreqs"
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Cache R packages
+        if: runner.os != 'Windows'
+        uses: actions/cache@v2
         with:
-          working-directory: tests/scripts/
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('tests/scripts/DESCRIPTION') }}
+
+      - name: Install R dependencies
+        shell: Rscript {0}
+        run: |
+          remotes::install_deps(pkgdir = "tests/scripts/", dependencies = TRUE)
 
       - name: Setup Python
         uses: actions/setup-python@v2
