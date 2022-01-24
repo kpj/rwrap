@@ -16,7 +16,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get remove mysql* && sudo apt-get install -y mysql-server
-    
+
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -26,7 +26,7 @@ jobs:
           mkdir -p ~/R_library
           echo ".libPaths('~/R_library')" > ~/.Rprofile
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v2
 
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
@@ -36,11 +36,10 @@ jobs:
           echo $sysreqs
           sudo -s eval "$sysreqs"
 
-      - name: Install R dependencies
-        shell: Rscript {0}
-        run: |
-          remotes::install_deps(pkgdir = "tests/scripts/", dependencies = TRUE)
-          
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: tests/scripts/
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
