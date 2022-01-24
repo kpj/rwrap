@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rwrap"
-version = "0.1.2"
+version = "0.2.0"
 description = "A thin wrapper around rpy2 with strong opinions on how data types should be converted."
 license = "MIT"
 authors = ["kpj <kim.philipp.jablonski@gmail.com>"]
