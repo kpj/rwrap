@@ -95,7 +95,7 @@ print(df_res.head())  # pd.DataFrame
 
 ### More examples
 
-Check the `tests/` directory for more examples showing how to rewrite R scripts in Python.
+Check the `tests/scripts` directory for more examples showing how to rewrite R scripts in Python.
 
 
 ## Tests
