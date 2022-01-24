@@ -123,6 +123,7 @@ def _(obj):
 
 # vectors
 @converter.py2rpy.register(list)
+@converter.py2rpy.register(tuple)
 def _(obj):
     logger.trace("py2rpy::list")
 
