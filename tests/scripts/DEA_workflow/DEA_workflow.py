@@ -3,7 +3,7 @@ import pandas as pd
 from rwrap import base, stats, DESeq2, biomaRt
 
 
-# read data (https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP009615)
+# retrieve count data (https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP009615)
 df_counts = pd.read_csv(
     "http://duffel.rail.bio/recount/v2/SRP009615/counts_gene.tsv.gz", sep="\t"
 ).set_index("gene_id")
