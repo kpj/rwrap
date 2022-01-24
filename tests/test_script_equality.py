@@ -50,6 +50,10 @@ def assert_file_equality(fname_r, fname_py):
 
 @pytest.mark.parametrize("name,path", gather_test_scripts())
 def test_execution(empty_dir, name, path):
+    # TODO: remove once upstream is fixed
+    if name in ["biomaRt", "DEA_workflow"]:
+        pytest.skip("Skip biomaRt's 'SSL certificate problem' error")
+
     # assemble paths
     py_script = os.path.join(path, f"{name}.py")
     r_script = os.path.join(path, f"{name}.R")
