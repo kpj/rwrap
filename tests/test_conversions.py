@@ -23,6 +23,8 @@ from rwrap.converter import converter
         ("c(TRUE, FALSE)", [True, False]),
         ("c(1, 2, 3)", [1, 2, 3]),
         ("list(1, 2, 3)", [1, 2, 3]),
+        ("list(1:2, 1:3)", [[1, 2], [1, 2, 3]]),
+        ("list(list(), list('a', 'b'))", [[], ["a", "b"]]),
         ('c(1, "a")', ["1", "a"]),  # adjust for R's type coercion
         # dicts
         ("c(a = 1, beta = 2, c = 3)", {"a": 1, "beta": 2, "c": 3}),
