@@ -169,7 +169,7 @@ def _(obj):
             break
     else:
         # if not special class was detected, we try primitives
-        if {"numeric", "character", "logical", "list"} & rclass:
+        if {"numeric", "integer", "character", "logical", "list"} & rclass:
             logger.trace("Using default class converter")
 
             keys = converter.rpy2py(obj.names)
