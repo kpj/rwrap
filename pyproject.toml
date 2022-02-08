@@ -12,7 +12,7 @@ python = "^3.8.0"
 rpy2 = "^3.4.5"
 pandas = "^1.4.0"
 numpy = "^1.22.1"
-loguru = "^0.5.3"
+loguru = ">=0.5.3,<0.7.0"
 geopandas = "^0.10.2"
 Shapely = "^1.8.0"
 
@@ -20,7 +20,7 @@ Shapely = "^1.8.0"
 pytest = "^6.2.5"
 pytest-markdown = "^1.0.2"
 bump2version = "^1.0.1"
-black = "^21.12b0"
+black = "^22.1"
 
 [build-system]
 requires = ["poetry"]
