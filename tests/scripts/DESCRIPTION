@@ -6,4 +6,5 @@ Imports:
     DESeq2,
     eurostat,
     lubridate,
-    msigdbr
+    msigdbr,
+    clusterProfiler

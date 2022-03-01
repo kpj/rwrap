@@ -93,6 +93,32 @@ print(df_res.head())  # pd.DataFrame
 ## ENSG00000267658.1   64.371181      -19.545702  3.041247 -6.426871  1.302573e-10  8.268736e-07                lncRNA
 ```
 
+### Geneset Enrichment Analysis
+
+Geneset enrichment analyses can be conducted using [clusterProfiler](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html):
+
+```python
+from rwrap import clusterProfiler, base
+
+
+clusterProfiler
+## <module 'clusterProfiler' from '/Library/Frameworks/R.framework/Versions/4.1/Resources/library/clusterProfiler'>
+
+
+genelist = [8318, 991, 9133, 890, 983, 4085, 7272, 1111, 891, 4174, 9232]
+
+res = clusterProfiler.enrichKEGG(gene=genelist, organism="hsa", pvalueCutoff=0.05)
+df = base.as_data_frame(res)
+
+print(df.head())  # pd.DataFrame
+##                 ID                              Description GeneRatio   BgRatio        pvalue      p.adjust        qvalue                                             geneID  Count
+## hsa04110  hsa04110                               Cell cycle     11/11  126/8115  8.124144e-21  1.462346e-19  6.841384e-20  8318/991/9133/890/983/4085/7272/1111/891/4174/...     11
+## hsa04114  hsa04114                           Oocyte meiosis      6/11  131/8115  6.823856e-09  6.141470e-08  2.873202e-08                         991/9133/983/4085/891/9232      6
+## hsa04914  hsa04914  Progesterone-mediated oocyte maturation      5/11  102/8115  1.237164e-07  7.266746e-07  3.399647e-07                              9133/890/983/4085/891      5
+## hsa05166  hsa05166  Human T-cell leukemia virus 1 infection      6/11  222/8115  1.614832e-07  7.266746e-07  3.399647e-07                        991/9133/890/4085/1111/9232      6
+## hsa04218  hsa04218                      Cellular senescence      5/11  156/8115  1.036418e-06  3.731103e-06  1.745545e-06                              9133/890/983/1111/891      5
+```
+
 ### More examples
 
 Check the `tests/scripts` directory for more examples showing how to rewrite R scripts in Python.
