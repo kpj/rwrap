@@ -34,6 +34,14 @@ from rwrap.converter import converter
         ),
         # pandas
         (
+            'data.frame(x = 1, y = "A")',
+            pd.DataFrame({"x": [1], "y": ["A"]}, index=["1"]),
+        ),
+        (
+            'data.frame(x = c(1), y = c("A"))',
+            pd.DataFrame({"x": [1], "y": ["A"]}, index=["1"]),
+        ),
+        (
             'data.frame(x = c(1, 2, 3), y = c("A", "B", "C"))',
             pd.DataFrame({"x": [1, 2, 3], "y": ["A", "B", "C"]}, index=["1", "2", "3"]),
         ),

@@ -1,6 +1,7 @@
 """Implement opinionated Py<->R conversion functions."""
 
 import datetime
+import collections
 
 from loguru import logger
 
@@ -191,7 +192,12 @@ def _(obj):
             logger.trace(f"Skipping conversion for class {rclass}")
 
     # vector of length 1 in R should be atomic type in Python
-    if not isinstance(obj, dict) and len(obj) == 1 and is_atomic:
+    if (
+        not isinstance(obj, dict)
+        and not isinstance(obj, pd.DataFrame)
+        and len(obj) == 1
+        and is_atomic
+    ):
         return obj[0]
     return obj
 
@@ -202,3 +208,26 @@ def _(obj):
     logger.trace("py2rpy::dict")
 
     return ro.ListVector({k: converter.py2rpy(v) for k, v in obj.items()})
+
+
+# dataframes
+# (fix for "ValueError: If using all scalar values, you must pass an index")
+@converter.rpy2py.register(ro.DataFrame)
+def rpy2py_dataframe(obj):
+    items = collections.OrderedDict(
+        (k, converter.rpy2py(v) if isinstance(v, ri.Sexp) else v)
+        for k, v in obj.items()
+    )
+
+    # if there is a single row in the dataframe, conversion will fail
+    # because we need lists and not scalars
+    index = converter.rpy2py(obj.rownames)
+    if not isinstance(index, list):
+        index = [index]
+
+        for key in items:
+            items[key] = [items[key]]
+
+    res = pd.DataFrame.from_dict(items)
+    res.index = index
+    return res
