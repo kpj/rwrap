@@ -50,12 +50,10 @@ Differentially expressed genes between conditions can be determined using [DESeq
 import pandas as pd
 from rwrap import DESeq2, biomaRt, base, stats
 
-
 DESeq2
 ## <module 'DESeq2' from '/Library/Frameworks/R.framework/Versions/4.1/Resources/library/DESeq2'>
 biomaRt
 ## <module 'biomaRt' from '/Library/Frameworks/R.framework/Versions/4.1/Resources/library/biomaRt'>
-
 
 # retrieve count data (https://trace.ncbi.nlm.nih.gov/Traces/sra/?study=SRP009615)
 df_counts = pd.read_csv(
@@ -100,10 +98,8 @@ Geneset enrichment analyses can be conducted using [clusterProfiler](https://bio
 ```python
 from rwrap import clusterProfiler, base
 
-
 clusterProfiler
 ## <module 'clusterProfiler' from '/Library/Frameworks/R.framework/Versions/4.1/Resources/library/clusterProfiler'>
-
 
 genelist = [8318, 991, 9133, 890, 983, 4085, 7272, 1111, 891, 4174, 9232]
 
