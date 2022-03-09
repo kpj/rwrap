@@ -160,7 +160,7 @@ def _(obj):
 def _(obj):
     logger.trace(f"rpy2py::ro.Vector[{list(obj.rclass)}]")
     rclass = set(obj.rclass)
-    is_atomic = True
+    is_atomic = False
 
     # handle special classes
     for class_, conv_func in CLASS_CONVERTERS.items():
@@ -185,19 +185,14 @@ def _(obj):
             else:
                 obj = values
 
-            if "list" in rclass:
-                is_atomic = False
+            if "list" not in rclass and not isinstance(obj, dict):
+                is_atomic = True
         else:
             # if no converter was found, we just return the raw object
             logger.trace(f"Skipping conversion for class {rclass}")
 
     # vector of length 1 in R should be atomic type in Python
-    if (
-        not isinstance(obj, dict)
-        and not isinstance(obj, pd.DataFrame)
-        and len(obj) == 1
-        and is_atomic
-    ):
+    if is_atomic and len(obj) == 1:
         return obj[0]
     return obj
 
