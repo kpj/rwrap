@@ -1,6 +1,7 @@
 """Implement opinionated Py<->R conversion functions."""
 
 import datetime
+import tempfile
 import collections
 
 from loguru import logger
@@ -9,13 +10,19 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 from shapely import geometry
+import igraph
 
 import rpy2.robjects as ro
 import rpy2.rinterface as ri
+from rpy2.robjects.packages import importr
 
 from rpy2.robjects import numpy2ri, pandas2ri
 
 from rpy2.robjects.conversion import converter as template_converter, Converter
+
+
+# auxiliary R imports
+igraph_R = importr("igraph")
 
 
 # setup converter
@@ -96,6 +103,14 @@ def convert_geometry(obj):
         raise TypeError(f"Invalid geometry type: {type_}")
 
 
+def convert_igraph(obj):
+    # TODO: do not write to disk
+    with tempfile.NamedTemporaryFile() as fd:
+        igraph_R.write_graph(obj, fd.name, format="graphml")
+        graph = igraph.Graph.Read(fd.name, format="graphml")
+    return graph
+
+
 # TODO: make use of `NameClassMap`
 CLASS_CONVERTERS = {
     "Date": convert_dates,
@@ -108,6 +123,7 @@ CLASS_CONVERTERS = {
     "POINT": lambda obj: [convert_geometry(obj)],
     "POLYGON": lambda obj: [convert_geometry(obj)],
     "MULTIPOLYGON": lambda obj: [convert_geometry(obj)],
+    "igraph": convert_igraph,
     "data.frame": lambda obj: converter.rpy2py(ro.DataFrame(obj)),
     "matrix": lambda obj: np.array(obj),
 }

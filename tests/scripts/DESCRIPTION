@@ -8,4 +8,5 @@ Imports:
     lubridate,
     msigdbr,
     clusterProfiler,
-    sf
+    sf,
+    igraph
