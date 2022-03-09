@@ -213,7 +213,7 @@ def _(obj):
 # dataframes
 # (fix for "ValueError: If using all scalar values, you must pass an index")
 @converter.rpy2py.register(ro.DataFrame)
-def rpy2py_dataframe(obj):
+def _(obj):
     items = collections.OrderedDict(
         (k, converter.rpy2py(v) if isinstance(v, ri.Sexp) else v)
         for k, v in obj.items()
