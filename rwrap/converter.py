@@ -21,8 +21,15 @@ from rpy2.robjects import numpy2ri, pandas2ri
 from rpy2.robjects.conversion import converter as template_converter, Converter
 
 
-# auxiliary R imports
-igraph_R = importr("igraph")
+# helper for cached R imports
+R_MODULE_DICT = {}
+
+
+def importr_cached(pkg_name, reload=False):
+    """`importr` with caching."""
+    if reload and pkg_name in R_MODULE_DICT:
+        del R_MODULE_DICT[pkg_name]
+    return R_MODULE_DICT.setdefault(pkg_name, importr(pkg_name))
 
 
 # setup converter
@@ -105,6 +112,8 @@ def convert_geometry(obj):
 
 def convert_igraph(obj):
     # TODO: do not write to disk
+    igraph_R = importr_cached("igraph")
+
     with tempfile.NamedTemporaryFile() as fd:
         igraph_R.write_graph(obj, fd.name, format="graphml")
         graph = igraph.Graph.Read(fd.name, format="graphml")
