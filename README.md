@@ -60,7 +60,8 @@ df_counts = pd.read_csv(
     "http://duffel.rail.bio/recount/v2/SRP009615/counts_gene.tsv.gz", sep="\t"
 ).set_index("gene_id")
 df_design = pd.DataFrame(
-    {"condition": ["1", "2", "1", "2", "3", "4", "3", "4", "5", "6", "5", "6"]}
+    {"condition": ["1", "2", "1", "2", "3", "4", "3", "4", "5", "6", "5", "6"]},
+    index=df_counts.columns
 )
 
 # run differential gene expression analysis
