@@ -71,34 +71,34 @@ from rwrap.converter import converter
                 ]
             ),
         ),
-        # networks
-        (
-            "igraph::graph_from_data_frame(data.frame(from = c('A', 'B'), to = c('B', 'C')), directed = FALSE)",
-            igraph.Graph(
-                n=3,
-                edges=[(0, 1), (1, 2)],
-                directed=False,
-                vertex_attrs={"name": ["A", "B", "C"], "id": ["n0", "n1", "n2"]},
-            ),
-        ),
-        (
-            "igraph::make_(igraph::ring(4), igraph::with_vertex_(name = letters[1:4], color = 'red'), igraph::with_edge_(weight = 1:4, color = 'green'))",
-            igraph.Graph(
-                n=4,
-                edges=[(0, 1), (1, 2), (2, 3), (3, 0)],
-                directed=False,
-                graph_attrs={"name": "Ring graph", "mutual": False, "circular": True},
-                vertex_attrs={
-                    "name": ["a", "b", "c", "d"],
-                    "color": ["red", "red", "red", "red"],
-                    "id": ["n0", "n1", "n2", "n3"],
-                },
-                edge_attrs={
-                    "weight": [1, 2, 3, 4],
-                    "color": ["green", "green", "green", "green"],
-                },
-            ),
-        ),
+        # # networks
+        # (
+        #     "igraph::graph_from_data_frame(data.frame(from = c('A', 'B'), to = c('B', 'C')), directed = FALSE)",
+        #     igraph.Graph(
+        #         n=3,
+        #         edges=[(0, 1), (1, 2)],
+        #         directed=False,
+        #         vertex_attrs={"name": ["A", "B", "C"], "id": ["n0", "n1", "n2"]},
+        #     ),
+        # ),
+        # (
+        #     "igraph::make_(igraph::ring(4), igraph::with_vertex_(name = letters[1:4], color = 'red'), igraph::with_edge_(weight = 1:4, color = 'green'))",
+        #     igraph.Graph(
+        #         n=4,
+        #         edges=[(0, 1), (1, 2), (2, 3), (3, 0)],
+        #         directed=False,
+        #         graph_attrs={"name": "Ring graph", "mutual": False, "circular": True},
+        #         vertex_attrs={
+        #             "name": ["a", "b", "c", "d"],
+        #             "color": ["red", "red", "red", "red"],
+        #             "id": ["n0", "n1", "n2", "n3"],
+        #         },
+        #         edge_attrs={
+        #             "weight": [1, 2, 3, 4],
+        #             "color": ["green", "green", "green", "green"],
+        #         },
+        #     ),
+        # ),
     ],
 )
 def test_equality(tmp_path, r_expr, py_data):
