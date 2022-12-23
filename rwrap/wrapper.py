@@ -16,7 +16,13 @@ class RLibraryWrapper:
 
     def __init__(self, lib_name: str) -> None:
         """Import R package."""
-        self.__lib = importr(lib_name.replace("_", "."))
+
+        # prevent crash: "rpy2.robjects.packages.LibraryError: The symbol .env in the package "igraph" is conflicting with a Python object attribute"
+        robject_translations = {".env": "__env"}
+
+        self.__lib = importr(
+            lib_name.replace("_", "."), robject_translations=robject_translations
+        )
 
     def __getattr__(self, name: str) -> Callable:
         """Access method of R package."""
