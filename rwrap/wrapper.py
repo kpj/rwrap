@@ -8,7 +8,7 @@ import rpy2.robjects as ro
 from rpy2.robjects.packages import importr
 from rpy2.robjects.conversion import localconverter
 
-from .converter import converter
+from .converter import converter, importr_cached
 
 
 class RLibraryWrapper:
@@ -16,7 +16,7 @@ class RLibraryWrapper:
 
     def __init__(self, lib_name: str) -> None:
         """Import R package."""
-        self.__lib = importr(lib_name.replace("_", "."))
+        self.__lib = importr_cached(lib_name.replace("_", "."))
 
     def __getattr__(self, name: str) -> Callable:
         """Access method of R package."""
