@@ -29,7 +29,13 @@ def importr_cached(pkg_name, reload=False):
     """`importr` with caching."""
     if reload and pkg_name in R_MODULE_DICT:
         del R_MODULE_DICT[pkg_name]
-    return R_MODULE_DICT.setdefault(pkg_name, importr(pkg_name))
+
+    # prevent crash: "rpy2.robjects.packages.LibraryError: The symbol .env in the package "igraph" is conflicting with a Python object attribute"
+    robject_translations = {".env": "__env"}
+
+    return R_MODULE_DICT.setdefault(
+        pkg_name, importr(pkg_name, robject_translations=robject_translations)
+    )
 
 
 # setup converter
